@@ -1,5 +1,7 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart' ;
 import 'package:otero_mandy_new/screens/signupScreen.dart';
+import 'package:otero_mandy_new/sqlDatabase/databaseHelper.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -25,6 +27,9 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
 
   //declare var
   bool hidePassword = true ;
+  var usernameController = TextEditingController();
+  var passwordController = TextEditingController();
+
 
   //methods
   void showHidePassword(){
@@ -39,6 +44,43 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
       });
 
     }
+  }
+
+  void validateInputs() async{
+    if(usernameController.text.isEmpty){
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        title: 'Error',
+        desc: 'Username is empty',
+        btnOkOnPress: (){},
+      ).show();
+
+  }else if(passwordController.text.isEmpty){
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        title: 'Error',
+        desc: 'Password is empty',
+        btnOkOnPress: (){},
+      ).show();
+  }else {
+      //Execute the Login Algorithmns
+      final users = await DatabaseHelper().loginUser(usernameController.text, passwordController.text);
+      if (users.isEmpty){
+        AwesomeDialog(
+          context: context,
+          title: 'Invalid Username or Password',
+          dialogType: DialogType.error,
+          desc: 'User not found in the Database',
+          btnOkOnPress: (){}
+        ).show;
+      }else {
+          //Navigate to Dashboard
+      }
+    }
+
+
   }
 
   @override
@@ -69,6 +111,7 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
+                    controller: usernameController,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.supervised_user_circle),
                       label: Text('Username'),
@@ -87,6 +130,7 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                 child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
+                      controller: passwordController,
                       obscureText: hidePassword,
                       decoration: InputDecoration(
                           prefixIcon: Icon(Icons.password),
