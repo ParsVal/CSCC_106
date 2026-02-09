@@ -22,11 +22,11 @@ class DatabaseHelper {
       onCreate: (db, version) async {
           //Query to Construct student table
           await db.execute("""
-          CREATE TABLE IF NOT EXIST students(
-          id INTEGER PRIMARY KEY AUTO INCREMENT,
-          fullName TEXT,  
-          username TEXT,
-          password TEXT,
+          CREATE TABLE IF NOT EXISTS students(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          fullName TEXT NOT NULL,
+          username TEXT NOT NULL,
+          password TEXT NOT NULL,
           dateAdded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
           )
           """);
@@ -56,7 +56,7 @@ class DatabaseHelper {
     return await db.query('students') ;
   }
 
-  //Method to upadate
+  //Method to update
   Future<int> updateStudent(int studentID, String fullName, String username, String password) async{
     //Initialize Database connection link
     final db = await _database();

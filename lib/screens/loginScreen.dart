@@ -1,5 +1,6 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart' ;
+import 'package:otero_mandy_new/screens/dashboard.dart';
 import 'package:otero_mandy_new/screens/signupScreen.dart';
 import 'package:otero_mandy_new/sqlDatabase/databaseHelper.dart';
 
@@ -77,6 +78,19 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
         ).show;
       }else {
           //Navigate to Dashboard
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.success,
+          title: 'Login Success',
+          desc: 'User successfully validated',
+          btnOkOnPress: (){
+            Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (BuildContext context)=>Dashboard()
+                )
+            );
+          },
+        ).show();
       }
     }
 
@@ -156,7 +170,9 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                     style: ButtonStyle(
                       backgroundColor: WidgetStatePropertyAll(Colors.white70 )
                     ),
-                    onPressed: (){},
+                    onPressed: (){
+                      validateInputs();
+                    },
                     child: Text('Login')),
               ),
               //Row for Signup Navigation
