@@ -84,7 +84,9 @@ class DatabaseHelper {
         where: 'username = ? AND password = ?',
         whereArgs: [username, password]) ;
 
-
   }
+
+  //Method to getallAStudents
+
 
 }
