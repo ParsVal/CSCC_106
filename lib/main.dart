@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart' ;
 import 'screens/loginScreen.dart' ;
 import 'classActivity.dart' ;
@@ -21,8 +22,9 @@ double division(num1, num2) {
 
 
 
-void main() {
-
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   //print full name
   runApp(LoginScreen()) ;
   print("Mandy Otero") ;

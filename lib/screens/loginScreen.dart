@@ -1,9 +1,11 @@
+import 'dart:developer' as developer;
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:otero_mandy_new/screens/dashboard.dart';
-import 'package:otero_mandy_new/screens/homePage.dart';
-import 'package:otero_mandy_new/screens/signupScreen.dart';
-import 'package:otero_mandy_new/sqlDatabase/databaseHelper.dart';
+import '/screens/homePage.dart';
+import '/screens/signupScreen.dart';
+import '/sqlDatabase/databaseHelper.dart';
+import '../GoogleServices/auth_service.dart';
+import 'dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -85,7 +87,6 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Logo / Icon Area
                 Container(
                   width: 80,
                   height: 80,
@@ -108,8 +109,6 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                       color: Colors.white, size: 36),
                 ),
                 const SizedBox(height: 28),
-
-                // Title
                 const Text(
                   'Welcome Back',
                   style: TextStyle(
@@ -128,8 +127,6 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                   ),
                 ),
                 const SizedBox(height: 40),
-
-                // Form Card
                 Container(
                   padding: const EdgeInsets.all(28),
                   decoration: BoxDecoration(
@@ -168,10 +165,101 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                       ),
                       const SizedBox(height: 28),
                       _buildPrimaryButton('Sign In', validateInputs),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Colors.white.withOpacity(0.1),
+                              thickness: 1,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'or',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.4),
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Divider(
+                              color: Colors.white.withOpacity(0.1),
+                              thickness: 1,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: OutlinedButton(
+                          onPressed: () async{
+                            final user = await AuthService().signInWithGoogle();
+                            if (user != null) {
+                              developer.log(
+                                'Logged in: ${user.email}',
+                                name: 'LoginScreen',
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Logged in: ${user.email}')),
+                                );
+                                await Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute<Homepage>(
+                                    builder: (_) {
+                                      return Homepage();
+                                    },
+                                  ),
+                                );
+                              }
+                              return;
+                            }
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                                color: Colors.white.withOpacity(0.15), width: 1),
+                            backgroundColor: const Color(0xFF0F172A),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  'G',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4285F4),
+                                    fontFamily: 'Arial',
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Continue with Google',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -230,7 +318,8 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
       style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14),
+        hintStyle:
+        TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14),
         prefixIcon: Icon(icon, color: const Color(0xFF0EA5E9), size: 20),
         suffixIcon: isPassword
             ? IconButton(

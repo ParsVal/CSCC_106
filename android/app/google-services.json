@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "387424105448",
+    "firebase_url": "https://cspc106-9e16a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "cspc106-9e16a",
+    "storage_bucket": "cspc106-9e16a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387424105448:android:77ff14249d406b49d4aa5d",
+        "android_client_info": {
+          "package_name": "com.example.otero_mandy_new"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387424105448-5n5p3075q79t8572mi26hcrq8uugp0jc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.otero_mandy_new",
+            "certificate_hash": "e773b58cae44adeb1c0583ea90d420c9d0da4d0b"
+          }
+        },
+        {
+          "client_id": "387424105448-14fratg4a5qhfr2lphfs3lpfc7ndbvah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYbTWvDhc5C6sWpjkA55ikEJx1SYLQg0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387424105448-14fratg4a5qhfr2lphfs3lpfc7ndbvah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
