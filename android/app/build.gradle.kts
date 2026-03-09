@@ -10,7 +10,6 @@ plugins {
 android {
     namespace = "com.example.otero_mandy_new"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -19,6 +18,13 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    packaging {
+        resources {
+            pickFirsts.add("**/libc++_shared.so")
+            pickFirsts.add("**/libjsc.so")
+        }
     }
 
     defaultConfig {

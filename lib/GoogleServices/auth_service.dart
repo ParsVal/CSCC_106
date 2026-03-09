@@ -124,4 +124,12 @@ class AuthService {
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
+
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  Stream<User?> authStateChanges() {
+    return _auth.authStateChanges();
+  }
 }

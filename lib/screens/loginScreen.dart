@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:async';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import '/screens/homePage.dart';
@@ -197,26 +198,108 @@ class _LoginScreenHomeState extends State<LoginScreenHome> {
                         width: double.infinity,
                         height: 50,
                         child: OutlinedButton(
-                          onPressed: () async{
-                            final user = await AuthService().signInWithGoogle();
-                            if (user != null) {
-                              developer.log(
-                                'Logged in: ${user.email}',
-                                name: 'LoginScreen',
+                          onPressed: () async {
+                            // Show loading indicator
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0EA5E9)),
+                                ),
+                              ),
+                            );
+
+                            try {
+                              // Add timeout for slow internet connections
+                              final user = await AuthService().signInWithGoogle().timeout(
+                                const Duration(seconds: 30),
+                                onTimeout: () {
+                                  throw TimeoutException('Connection timeout. Please check your internet connection and try again.');
+                                },
                               );
+                              
+                              // Dismiss loading indicator
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Logged in: ${user.email}')),
+                                Navigator.of(context).pop();
+                              }
+
+                              if (user != null) {
+                                developer.log(
+                                  'Google Sign-In successful: ${user.email}',
+                                  name: 'LoginScreen',
                                 );
-                                await Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute<Homepage>(
-                                    builder: (_) {
-                                      return Homepage();
+                                
+                                if (context.mounted) {
+                                  AwesomeDialog(
+                                    context: context,
+                                    dialogType: DialogType.success,
+                                    title: 'Welcome!',
+                                    desc: 'Successfully signed in with Google',
+                                    btnOkOnPress: () {
+                                      Navigator.of(context).pushAndRemoveUntil(
+                                        MaterialPageRoute(builder: (_) => Homepage()),
+                                        (route) => false,
+                                      );
                                     },
-                                  ),
+                                  ).show();
+                                }
+                              } else {
+                                if (context.mounted) {
+                                  _showDialog(
+                                    DialogType.error,
+                                    'Sign-In Failed',
+                                    'Unable to sign in with Google. Please check your internet connection and try again.',
+                                  );
+                                }
+                              }
+                            } on TimeoutException catch (e) {
+                              // Dismiss loading indicator
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                              
+                              if (context.mounted) {
+                                _showDialog(
+                                  DialogType.error,
+                                  'Connection Timeout',
+                                  'Slow internet connection detected. Please check your network and try again.',
                                 );
                               }
-                              return;
+                              
+                              developer.log(
+                                'Google Sign-In timeout: $e',
+                                name: 'LoginScreen',
+                              );
+                            } catch (e) {
+                              // Dismiss loading indicator
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                              
+                              String errorMessage = 'An error occurred during sign-in. Please try again.';
+                              
+                              // Check for specific error types
+                              if (e.toString().contains('network')) {
+                                errorMessage = 'Network error. Please check your internet connection.';
+                              } else if (e.toString().contains('timeout')) {
+                                errorMessage = 'Connection timeout. Please try again.';
+                              } else if (e.toString().contains('sign_in')) {
+                                errorMessage = 'Google Sign-In failed. Please try again.';
+                              }
+                              
+                              if (context.mounted) {
+                                _showDialog(
+                                  DialogType.error,
+                                  'Sign-In Error',
+                                  errorMessage,
+                                );
+                              }
+                              
+                              developer.log(
+                                'Google Sign-In error: $e',
+                                name: 'LoginScreen',
+                              );
                             }
                           },
                           style: OutlinedButton.styleFrom(

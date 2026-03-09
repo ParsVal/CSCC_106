@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:otero_mandy_new/screens/loginScreen.dart';
+import 'package:otero_mandy_new/GoogleServices/auth_service.dart';
 
 // Dashboard now accepts callbacks from Homepage so it never pushes new routes
 class Dashboard extends StatefulWidget {
@@ -17,6 +19,32 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final AuthService _authService = AuthService();
+  User? _currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = _authService.getCurrentUser();
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await _authService.signOut();
+      if (mounted) {
+        widget.onLogout();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error signing out: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +66,7 @@ class _DashboardState extends State<Dashboard> {
           Container(
             margin: const EdgeInsets.only(right: 12),
             child: IconButton(
-              onPressed: widget.onLogout,
+              onPressed: _handleLogout,
               tooltip: 'Logout',
               icon: Container(
                 padding: const EdgeInsets.all(6),
@@ -79,18 +107,22 @@ class _DashboardState extends State<Dashboard> {
                           color: Colors.white, size: 28),
                     ),
                     const SizedBox(width: 14),
-                    const Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Admin User',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 15)),
-                        SizedBox(height: 2),
-                        Text('Administrator',
-                            style: TextStyle(
-                                color: Colors.white70, fontSize: 12)),
+                        Text(
+                          _currentUser?.displayName ?? 
+                          _currentUser?.email?.split('@')[0] ?? 
+                          'User',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15)),
+                        const SizedBox(height: 2),
+                        Text(
+                          _currentUser?.email ?? 'user@example.com',
+                          style: const TextStyle(
+                              color: Colors.white70, fontSize: 12)),
                       ],
                     )
                   ],
@@ -132,7 +164,7 @@ class _DashboardState extends State<Dashboard> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: widget.onLogout,
+                    onPressed: _handleLogout,
                     icon: const Icon(Icons.logout_rounded, size: 18),
                     label: const Text('Logout'),
                     style: ElevatedButton.styleFrom(
@@ -180,7 +212,7 @@ class _DashboardState extends State<Dashboard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Good Day, Admin! 👋',
+                        Text('Good Day, ${_currentUser?.displayName ?? _currentUser?.email?.split('@')[0] ?? 'User'}! 👋',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
